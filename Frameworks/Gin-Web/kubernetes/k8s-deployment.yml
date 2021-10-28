@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gin-web
+  labels:
+    app: gin-web
+spec:
+  selector:
+    matchLabels:
+      app: gin-web
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: gin-web
+        tier: service
+    spec:
+      containers:
+        - name: gin-web
+          image: "deividroger/gin-web:1.0.1"
+          ports:
+            - containerPort: 9090
+          env:
+            - name: PORT
+              value: "9090"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "125m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 9090
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 9090
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
